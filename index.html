@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberseries Arctic Pro</title>
+    <style> 
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 15px 0;
+            z-index: 2000;
+            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav-logo { 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px; 
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .logo-img { height: 35px; width: auto; filter: drop-shadow(0 0 5px rgba(0, 242, 254, 0.5)); }
+        .nav-logo span { color: #00f2fe; }
+
+        .nav-links { display: flex; list-style: none; gap: 30px; margin: 0; padding: 0; }
+        .nav-links a { text-decoration: none; color: white; font-weight: 500; font-size: 14px; text-transform: uppercase; transition: 0.3s; cursor: pointer; }
+        .nav-links a:hover { color: #00f2fe; }
+
+        /* --- DROPDOWN --- */
+        .dropdown { position: relative; }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #11111b;
+            min-width: 180px;
+            border: 1px solid #00f2fe;
+            border-radius: 10px;
+            padding: 10px 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .dropdown:hover .dropdown-content { display: block !important; }
+        .dropdown-content a { padding: 10px 20px; text-transform: none; display: block; color: white; text-decoration: none; cursor: pointer; }
+        .dropdown-content a:hover { background: rgba(0, 242, 254, 0.1); color: #00f2fe; }
+
+        /* --- SECTIONS --- */
+        .catalog-container, .category-section, .info-section {
+            padding-top: 120px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+            display: none;
+        }
+        .catalog-grid, .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+            gap: 30px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .section-title { font-size: 32px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .category-card:hover { background: rgba(0, 242, 254, 0.1); transform: translateY(-10px); border-color: #00f2fe; }
+        .category-card img { width: 100%; height: 150px; object-fit: contain; }
+        .category-card span { display: block; margin-top: 15px; font-weight: bold; font-size: 18px; }
+
+        .catalog-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            transition: 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            text-align: left;
+        }
+        .catalog-item:hover { background: rgba(0, 242, 254, 0.1); border: 1px solid #00f2fe; transform: translateY(-5px); }
+        .catalog-img-small { width: 100%; max-height: 200px; object-fit: contain; margin-bottom: 20px; }
+        .catalog-item h3 { margin: 15px 0 5px 0; font-size: 20px; color: #00f2fe; font-weight: bold; }
+        .catalog-price { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .mini-specs { list-style: none; padding: 0; font-size: 13px; color: #ccc; line-height: 1.6; }
+
+        /* --- DETAILS --- */
+        .product-detail-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 40px;
+            animation: fadeInPage 0.8s ease;
+            position: relative;
+            justify-content: center;
+        }
+        .product-detail-content {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 60px;
+            border-radius: 40px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            position: relative;
+            width: 1000px;
+            min-height: 500px;
+            box-sizing: border-box;
+        }
+        .detail-image-box {
+            flex: 0 0 400px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .detail-image { 
+            max-width: 100%;
+            max-height: 350px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(0, 242, 254, 0.3));
+        }
+        .detail-info-section { 
+            text-align: left; 
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .detail-info-section h1 { font-size: 48px; color: #00f2fe; margin: 10px 0; }
+        .category-tag { color: #00f2fe; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; font-size: 14px; }
+        .main-description { font-size: 17px; color: #ccc; line-height: 1.6; margin-bottom: 25px; }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 25px;
+        }
+        .spec-item { color: #eee; font-size: 15px; }
+        .spec-item strong { color: #00f2fe; display: block; font-size: 13px; text-transform: uppercase; margin-bottom: 2px; }
+
+        .price-section { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%; /* Fix pro zarovnání */
+        }
+        .detail-price { 
+            font-size: 32px; 
+            font-weight: bold;
+            color: white; 
+        }
+
+        .btn-buy-large {
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+            color: #01012b; 
+            border: none; 
+            padding: 12px 35px;
+            font-size: 16px; 
+            font-weight: bold; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: 0.3s;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .btn-buy-large:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 0px 15px rgba(0, 242, 254, 0.5); 
+        }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none !important;
+            position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            justify-content: center; align-items: center;
+        }
+        .modal.see { display: flex !important; }
+        .modal-content { background: #1e1e2e; padding: 30px; border: 1px solid #00f2fe; border-radius: 20px; text-align: center; }
+
+        /* --- SLIDER --- */
+        .slider-container {
+            position: relative;
+            max-width: 1100px;
+            margin: 20px auto 60px auto;
+            overflow: hidden;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            height: 450px;
+            border: 1px solid rgba(0, 242, 254, 0.1);
+        }
+        .slider { display: flex; height: 100%; transition: opacity 0.5s ease; }
+        .slide { min-width: 100%; display: none; align-items: center; justify-content: center; }
+        .slide-content { display: flex; align-items: center; padding: 40px 80px; gap: 40px; text-align: left; }
+        .slide-text { flex: 1; }
+        .slide-text h1 { font-size: 42px; margin-bottom: 15px; color: #00f2fe; }
+        .slide-text p { font-size: 18px; color: #ccc; margin-bottom: 25px; }
+        .slide-img { width: 400px; height: auto; filter: drop-shadow(0 0 20px rgba(0,242,254,0.3)); }
+
+        .slider-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5); color: white; border: none;
+            padding: 15px 20px; cursor: pointer; border-radius: 50%; z-index: 10; font-size: 20px;
+        }
+        .slider-btn:hover { background: #00f2fe; color: #000; }
+        .prev { left: 20px; }
+        .next { right: 20px; }
+
+        .dots-container { position: absolute; bottom: 25px; width: 100%; display: flex; justify-content: center; gap: 15px; }
+        .dot-wrapper { position: relative; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .dot { height: 8px; width: 8px; background-color: rgba(255, 255, 255, 0.4); border-radius: 50%; transition: 0.3s; position: absolute; }
+        .dot-wrapper.active .dot { background: #00f2fe; }
+        .progress-ring { transform: rotate(-90deg); position: absolute; opacity: 0; transition: opacity 0.3s; }
+        .dot-wrapper.active .progress-ring { opacity: 1; }
+        .progress-ring__circle { stroke-dasharray: 75.4; stroke-dashoffset: 75.4; }
+        @keyframes progress { from { stroke-dashoffset: 75.4; } to { stroke-dashoffset: 0; } }
+        .dot-wrapper.active .progress-ring__circle { animation: progress 5s linear forwards; }
+
+        @keyframes fadeInPage { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .close-btn {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            font-size: 35px;
+            color: white;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s;
+            z-index: 100;
+        }
+        .close-btn:hover {
+            color: #00e5ff;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" onclick="showHome()">
+                <img src="logo.jpg" alt="Logo" class="logo-img"> Cyber<span>Series</span>
+            </div>
+            <ul class="nav-links">
+                <li><a onclick="showHome()">Home</a></li>
+                <li class="dropdown">
+                    <a class="dropbtn">Products</a>
+                    <div class="dropdown-content">
+                        <a onclick="showHeadsets()">Headsets</a>
+                        <a onclick="showKeyboards()">Keyboards</a>
+                        <a onclick="showMice()">Mice</a>
+                        <a onclick="alert('Accessories coming soon!')">Accessories</a>
+                    </div>
+                </li>
+                <li><a onclick="showAbout()">About</a></li>
+                <li><a onclick="showContact()">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="home-page" class="category-section" style="display: block;">
+        <h2 class="section-title">Featured Gear</h2>
+        <div class="slider-container">
+            <div class="slider" id="main-slider">
+                <div class="slide">
+                    <div class="slide-content">
+                        <div class="slide-text">
+                            <h1>Arctis Pro</h1>
+                            <p>The ultimate gaming audio experience. High-fidelity sound meets premium comfort.</p>
+                            <button class="btn-buy-large" onclick="openDetail()">Buy Now!</button>
+                        </div>
+                        <img src="sluchatka.jpg" alt="Arctis" class="slide-img">
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-content">
+                        <div class="slide-text">
+                            <h1>Titan X Wireless</h1>
+                            <p>Dominate the game with lightning-fast response times and industrial-strength build.</p>
+                            <button class="btn-buy-large" onclick="openKeyboardDetail()">Buy Now!</button>
+                        </div>
+                        <img src="klavesnice.jpg" alt="Titan" class="slide-img">
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-content">
+                        <div class="slide-text">
+                            <h1>Phantom X Wireless</h1>
+                            <p>Comfort meets performance with perfect ergonomic fit for long sessions.</p>
+                            <button class="btn-buy-large" onclick="openPhantomDetail()">Buy Now!</button>
+                        </div>
+                        <img src="mys1.jpg" alt="Phantom" class="slide-img">
+                    </div>
+                </div>
+            </div>
+            <button class="slider-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+            <button class="slider-btn next" onclick="moveSlide(1)">&#10095;</button>
+            <div class="dots-container">
+                <div class="dot-wrapper" onclick="currentSlide(0)"><svg class="progress-ring" width="30" height="30"><circle class="progress-ring__circle" stroke="#00f2fe" stroke-width="2" fill="transparent" r="12" cx="15" cy="15"/></svg><span class="dot"></span></div>
+                <div class="dot-wrapper" onclick="currentSlide(1)"><svg class="progress-ring" width="30" height="30"><circle class="progress-ring__circle" stroke="#00f2fe" stroke-width="2" fill="transparent" r="12" cx="15" cy="15"/></svg><span class="dot"></span></div>
+                <div class="dot-wrapper" onclick="currentSlide(2)"><svg class="progress-ring" width="30" height="30"><circle class="progress-ring__circle" stroke="#00f2fe" stroke-width="2" fill="transparent" r="12" cx="15" cy="15"/></svg><span class="dot"></span></div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="category-grid">
+            <div class="category-card" onclick="showHeadsets()"><img src="sluchatka1.jpg" alt="Headsets"><span>Headsets</span></div>
+            <div class="category-card" onclick="showKeyboards()"><img src="klavesnice.jpg" alt="Keyboards"><span>Keyboards</span></div>
+            <div class="category-card" onclick="showMice()"><img src="mys.jpg" alt="Mice"><span>Mice</span></div>
+        </div>
+    </div>
+
+    <div id="about-page" class="info-section">
+        <h2 class="section-title">About CyberSeries</h2>
+        <p style="max-width: 800px; margin: 0 auto; line-height: 1.8; color: #ccc;">
+            CyberSeries is a leader in gaming peripherals, dedicated to providing pro-grade gear for gamers worldwide. 
+            Our mission is to push the boundaries of performance and design.
+        </p>
+    </div>
+
+    <div id="contact-page" class="info-section">
+        <h2 class="section-title">Contact Us</h2>
+        <p style="color: #ccc;">Email: support@cyberseries.pro<br>Phone: +1 234 567 890<br>Address: Silicon Valley, CA</p>
+    </div>
+
+    <div id="catalog-headsets" class="catalog-container">
+        <h2 class="section-title">Headsets</h2>
+        <div class="catalog-grid">
+            <div class="catalog-item" onclick="openOnyxDetail()">
+                <img src="sluchatka1.jpg" alt="Onyx Wave" class="catalog-img-small">
+                <h3>CyberSeries Onyx Wave</h3>
+                <p class="catalog-price">From $159.99</p>
+                <ul class="mini-specs"><li>• 50mm Hi-Res Drivers</li><li>• 7.1 Surround Sound</li><li>• Noise-Canceling</li></ul>
+            </div>
+            <div class="catalog-item" onclick="openDetail()">
+                <img src="sluchatka.jpg" alt="Arctic Pro" class="catalog-img-small">
+                <h3>CyberSeries Arctic Pro</h3>
+                <p class="catalog-price">From $399.99</p>
+                <ul class="mini-specs"><li>• 40mm Neodymium</li><li>• 50+ Hours Battery</li><li>• Wireless / USB-C</li></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="catalog-keyboards" class="catalog-container">
+        <h2 class="section-title">Mechanical Keyboards</h2>
+        <div class="catalog-grid">
+            <div class="catalog-item" onclick="openStealthDetail()">
+                <img src="klavesnice1.jpg" alt="Stealth K2" class="catalog-img-small">
+                <h3>CyberSeries Stealth K2</h3>
+                <p class="catalog-price">From $189.99</p>
+                <ul class="mini-specs"><li>• Silent Linear Switches</li><li>• 60% Design</li><li>• 120h Battery</li></ul>
+            </div>
+            <div class="catalog-item" onclick="openKeyboardDetail()">
+                <img src="klavesnice.jpg" alt="Titan X" class="catalog-img-small">
+                <h3>CyberSeries Titan X</h3>
+                <p class="catalog-price">From $249.99</p>
+                <ul class="mini-specs"><li>• Optical-Mechanical</li><li>• Aircraft Aluminum</li><li>• RGB Backlit</li></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="catalog-mice" class="catalog-container">
+        <h2 class="section-title">Mice</h2>
+        <div class="catalog-grid">
+            <div class="catalog-item" onclick="openPhantomDetail()">
+                <img src="mys1.jpg" alt="Phantom X" class="catalog-img-small">
+                <h3>CyberSeries Phantom X</h3>
+                <p class="catalog-price">From $99.99</p>
+                <ul class="mini-specs"><li>• 18k DPI Sensor</li><li>• UltraLight 41g</li><li>• RGB</li></ul>
+            </div>
+            <div class="catalog-item" onclick="openMiceDetail()">
+                <img src="mys.jpg" alt="Ghost K1" class="catalog-img-small">
+                <h3>CyberSeries Ghost K1</h3>
+                <p class="catalog-price">From $149.99</p>
+                <ul class="mini-specs"><li>• 26k DPI Sensor</li><li>• 59 Grams</li><li>• 80h Battery</li></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="headsets-page" class="product-detail-container">
+        <div class="product-detail-content">
+            <a onclick="showHeadsets()" class="close-btn">&times;</a>
+            <img src="sluchatka.jpg" class="detail-image">
+            <div class="detail-info-section">
+                <h1>CyberSeries Arctic Pro</h1>
+                <div class="specs-grid">
+                    <div class="spec-item"><strong>Drivers</strong>40mm Neodymium</div>
+                    <div class="spec-item"><strong>Frequency</strong>10Hz - 40kHz</div>
+                    <div class="spec-item"><strong>Battery</strong>50+ Hours</div>
+                    <div class="spec-item"><strong>Connection</strong>Wireless / USB-C</div>
+                </div>
+                <div class="price-section">
+                    <div class="detail-price">$399.99</div>
+                    <button class="btn-buy-large" onclick="Buy_Now()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="onyx-detail-page" class="product-detail-container">
+        <div class="product-detail-content">
+            <a onclick="showHeadsets()" class="close-btn">&times;</a>
+            <img src="sluchatka1.jpg" class="detail-image">
+            <div class="detail-info-section">
+                <h1>CyberSeries Onyx Wave</h1>
+                <div class="specs-grid">
+                    <div class="spec-item"><strong>Drivers</strong>50mm Hi-Res</div>
+                    <div class="spec-item"><strong>Audio</strong>7.1 Virtual Surround</div>
+                    <div class="spec-item"><strong>Connection</strong>USB-C / Wireless</div>
+                    <div class="spec-item"><strong>EarPads</strong>Memory Foam</div>
+                </div>
+                <div class="price-section">
+                    <div class="detail-price">$159.99</div>
+                    <button class="btn-buy-large" onclick="Buy_Now()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="keyboard-detail-page" class="product-detail-container">
+        <div class="product-detail-content">
+            <a onclick="showKeyboards()" class="close-btn">&times;</a>
+            <img src="klavesnice.jpg" class="detail-image">
+            <div class="detail-info-section">
+                <h1>CyberSeries Titan X</h1>
+                <div class="specs-grid">
+                    <div class="spec-item"><strong>Switches</strong>Optical-Mechanical</div>
+                    <div class="spec-item"><strong>Response</strong>0.2ms</div>
+                    <div class="spec-item"><strong>Frame</strong>Aircraft Aluminum</div>
+                    <div class="spec-item"><strong>Lighting</strong>Per-key RGB</div>
+                </div>
+                <div class="price-section">
+                    <div class="detail-price">$249.99</div>
+                    <button class="btn-buy-large" onclick="Buy_Now()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stealth-detail-page" class="product-detail-container">
+        <div class="product-detail-content">
+            <a onclick="showKeyboards()" class="close-btn">&times;</a>
+            <img src="klavesnice1.jpg" class="detail-image">
+            <div class="detail-info-section">
+                <h1>CyberSeries Stealth K2</h1>
+                <div class="specs-grid">
+                    <div class="spec-item"><strong>Switches</strong>Linear Silent</div>
+                    <div class="spec-item"><strong>Layout</strong>60% Mini</div>
+                    <div class="spec-item"><strong>Battery</strong>120 Hours</div>
+                    <div class="spec-item"><strong>Connection</strong>2.4GHz / BT</div>
+                </div>
+                <div class="price-section">
+                    <div class="detail-price">$189.99</div>
+                    <button class="btn-buy-large" onclick="Buy_Now()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mice-detail-page" class="product-detail-container">
+        <div class="product-detail-content">
+            <a onclick="showMice()" class="close-btn">&times;</a>
+            <div class="detail-image-box"><img src="mys.jpg" class="detail-image"></div>
+            <div class="detail-info-section">
+                <h1>CyberSeries Ghost K1</h1>
+                <div class="specs-grid">
+                    <div class="spec-item"><strong>Sensor</strong>Precision-X 26K</div>
+                    <div class="spec-item"><strong>Weight</strong>59 Grams</div>
+                    <div class="spec-item"><strong>Battery</strong>80+ Hours</div>
+                    <div class="spec-item"><strong>Polling Rate</strong>8000Hz</div>
+                </div>
+                <div class="price-section">
+                    <div class="detail-price">$149.99</div>
+                    <button class="btn-buy-large" onclick="Buy_Now()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="phantom-detail-page" class="product-detail-container">
+        <div class="product-detail-content">
+            <a onclick="showMice()" class="close-btn">&times;</a>
+            <img src="mys1.jpg" class="detail-image">
+            <div class="detail-info-section">
+                <h1>CyberSeries Phantom X</h1>
+                <div class="specs-grid">
+                    <div class="spec-item"><strong>Sensor</strong>OptiCore 18K</div>
+                    <div class="spec-item"><strong>Buttons</strong>9 Programmable</div>
+                    <div class="spec-item"><strong>Weight</strong>41 Grams</div>
+                    <div class="spec-item"><strong>Lighting</strong>3-Zone RGB</div>
+                </div>
+                <div class="price-section">
+                    <div class="detail-price">$99.99</div>
+                    <button class="btn-buy-large" onclick="Buy_Now()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="PopUpWindow" class="modal">
+        <div class="modal-content">
+            <h2 style="color: #00f2fe;">Great Choice!</h2>
+            <p>Product added to your cart.</p>
+            <button onclick="CloseWindow()" style="padding: 10px 20px; cursor: pointer; background: #00f2fe; border: none; font-weight: bold;">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        function hideAll() {
+            const sections = [
+                "home-page", "catalog-headsets", "catalog-keyboards", "catalog-mice", "about-page", "contact-page",
+                "headsets-page", "onyx-detail-page", "keyboard-detail-page", "stealth-detail-page",
+                "mice-detail-page", "phantom-detail-page"
+            ];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = "none";
+            });
+        }
+
+        function showHome() { hideAll(); document.getElementById("home-page").style.display = "block"; }
+        function showHeadsets() { hideAll(); document.getElementById("catalog-headsets").style.display = "block"; }
+        function showKeyboards() { hideAll(); document.getElementById("catalog-keyboards").style.display = "block"; }
+        function showMice() { hideAll(); document.getElementById("catalog-mice").style.display = "block"; }
+        function showAbout() { hideAll(); document.getElementById("about-page").style.display = "block"; }
+        function showContact() { hideAll(); document.getElementById("contact-page").style.display = "block"; }
+
+        function openDetail() { hideAll(); document.getElementById("headsets-page").style.display = "flex"; }
+        function openOnyxDetail() { hideAll(); document.getElementById("onyx-detail-page").style.display = "flex"; }
+        function openKeyboardDetail() { hideAll(); document.getElementById("keyboard-detail-page").style.display = "flex"; }
+        function openStealthDetail() { hideAll(); document.getElementById("stealth-detail-page").style.display = "flex"; }
+        function openMiceDetail() { hideAll(); document.getElementById("mice-detail-page").style.display = "flex"; }
+        function openPhantomDetail() { hideAll(); document.getElementById("phantom-detail-page").style.display = "flex"; }
+
+        function Buy_Now() { document.getElementById("PopUpWindow").classList.add("see"); }
+        function CloseWindow() { document.getElementById("PopUpWindow").classList.remove("see"); }
+
+        let slideIndex = 0;
+        let slideInterval;
+
+        function showSlides(n) {
+            const slides = document.getElementsByClassName("slide");
+            const dotWrappers = document.getElementsByClassName("dot-wrapper");
+            if (n >= slides.length) slideIndex = 0;
+            if (n < 0) slideIndex = slides.length - 1;
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+                dotWrappers[i].classList.remove("active");
+                const circle = dotWrappers[i].querySelector('.progress-ring__circle');
+                circle.style.animation = 'none'; void circle.offsetWidth; circle.style.animation = null;
+            }
+            slides[slideIndex].style.display = "flex";
+            dotWrappers[slideIndex].classList.add("active");
+            clearInterval(slideInterval);
+            slideInterval = setInterval(() => { moveSlide(1); }, 5000);
+        }
+
+        function moveSlide(n) { showSlides(slideIndex += n); }
+        function currentSlide(n) { showSlides(slideIndex = n); }
+        window.onload = function() { showSlides(0); };
+    </script>
+</body>
+</html>
